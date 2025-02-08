@@ -20,7 +20,7 @@ Goldium Wu - gow4@pitt.edu
 </p>
 Upload an image or take a picture like this, then tell the prommpt what you are in the mood to read and it will give you personalized recomendations!
 
-&nbsp;&nbsp;&nbsp;....
+&nbsp;&nbsp;&nbsp;
 &nbsp;
 
 ## How we built it

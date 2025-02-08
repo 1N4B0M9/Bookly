@@ -10,20 +10,36 @@ export default function Recommendations({ extractedTitles }) {
     const [error, setError] = useState(null);
     const [displayText, setDisplayText] = useState(""); // For typing effect
     const fullText = "Tell us what kind of book you want to read"; // Full text to type out
+    const [recommendationsText, setRecommendationsText] = useState("");
+    const recommendationsFullText = "Recommended Books:";
 
-    // Typing effect logic
+    // Typing effect logic for prompt
     useEffect(() => {
         let index = 0;
         const interval = setInterval(() => {
             if (index <= fullText.length) {
-                setDisplayText(fullText.slice(0, index)); // Slice ensures no skipping
+                setDisplayText(fullText.slice(0, index));
                 index++;
             } else {
-                clearInterval(interval); // Stop the interval when finished
+                clearInterval(interval);
             }
-        }, 50); // Adjust speed of typing here
-        return () => clearInterval(interval); // Cleanup on unmount
+        }, 50);
+        return () => clearInterval(interval);
     }, []);
+
+    // Typing effect logic for recommendations heading
+    useEffect(() => {
+        let index = 0;
+        const interval = setInterval(() => {
+            if (index <= recommendationsFullText.length) {
+                setRecommendationsText(recommendationsFullText.slice(0, index));
+                index++;
+            } else {
+                clearInterval(interval);
+            }
+        }, 50);
+        return () => clearInterval(interval);
+    }, [recommendations]);
 
     const getRecommendations = async () => {
         setLoading(true);
@@ -47,7 +63,7 @@ export default function Recommendations({ extractedTitles }) {
 
     return (
         <div>
-            <h2>{displayText}</h2> {/* Displays the animated text */}
+            <h2 className="typing-text">{displayText}</h2> {/* Displays the animated text */}
             <input
                 type="text"
                 placeholder="e.g. A thrilling mystery novel"
@@ -68,10 +84,11 @@ export default function Recommendations({ extractedTitles }) {
 
             {recommendations.length > 0 && (
                 <div>
-                    <h2>Recommended Books:</h2>
-                    <ul>
+                    <h2 className="typing-text">{recommendationsText}</h2>
+                    <ul className="recBox" >
                         {recommendations.map((book, idx) => (
-                            <li key={idx}>{book}</li>
+                            <li className="bookItems" key={idx}>{book}</li>
+
                         ))}
                     </ul>
                 </div>

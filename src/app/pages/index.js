@@ -1,23 +1,25 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import UploadForm from "../components/UploadForm";
 import Recommendations from "../components/Recommendations";
 import { Hanken_Grotesk } from "next/font/google";
 
 const hankenGrotesk = Hanken_Grotesk({
   subsets: ["latin"],
-  weight: ["400", "700", "900"], 
-  variable: "--font-hanken", 
+  weight: ["400", "700", "900"],
+  variable: "--font-hanken",
 });
 
-function Home() {
+export default function HomePage() {
+  const router = useRouter();
   const [results, setResults] = useState(null);
+  const [fileAttached, setFileAttached] = useState(false);
   const [image, setImage] = useState(null);
   const [stream, setStream] = useState(null);
-  const [uploading, setUploading] = useState(false);
-  const [facingMode, setFacingMode] = useState("environment"); // "user" or "environment"
+  const [facingMode, setFacingMode] = useState("environment");
+
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
@@ -31,38 +33,41 @@ function Home() {
   const startCamera = async () => {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode }
+        video: { facingMode },
       });
       setStream(mediaStream);
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-      }
     } catch (error) {
       console.error("Error accessing camera:", error);
-    }
-  };
-
-  const toggleCamera = async () => {
-    setFacingMode(prev => (prev === "user" ? "environment" : "user"));
-    stopCamera(); 
-    await startCamera(); 
-  };
-
-  const captureImage = () => {
-    if (videoRef.current && canvasRef.current) {
-      const context = canvasRef.current.getContext("2d");
-      context.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
-      const imageData = canvasRef.current.toDataURL("image/png");
-      setImage(imageData);
-      stopCamera();
+      alert("Unable to access camera.");
     }
   };
 
   const stopCamera = () => {
     if (stream) {
-      stream.getTracks().forEach(track => track.stop());
+      stream.getTracks().forEach((track) => track.stop());
       setStream(null);
     }
+  };
+
+  const toggleCamera = async () => {
+    setFacingMode((prev) => (prev === "user" ? "environment" : "user"));
+    stopCamera();
+    await startCamera();
+  };
+
+  const captureImage = () => {
+    if (!videoRef.current || !canvasRef.current) return;
+    const ctx = canvasRef.current.getContext("2d");
+    ctx.drawImage(
+      videoRef.current,
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+    const dataUrl = canvasRef.current.toDataURL("image/png");
+    setImage(dataUrl);
+    stopCamera();
   };
 
   const retakePhoto = () => {
@@ -70,88 +75,147 @@ function Home() {
     startCamera();
   };
 
+  const returnToHome = () => {
+    // Option 1: Actually navigate to '/', effectively refreshing:
+    // router.push("/");
+
+    // Option 2: If we're already on '/', just reset everything:
+    setResults(null);
+    setFileAttached(false);
+    setImage(null);
+    stopCamera();
+  };
+
+  // This is the "New Recommendation" button's handler
+  const handleNewRecommendation = () => {
+    // Same idea: reset all states so user is back to initial screen
+    setResults(null);
+    setFileAttached(false);
+    setImage(null);
+    stopCamera();
+  };
+
   return (
     <div style={styles.container}>
+      {/* Always show the logo */}
       <h1 style={styles.title}>
-        <img 
-          src={"https://github.com/1N4B0M9/Bookly/blob/main/Assets/Bookly_New_Logo.png?raw=true"} 
-          alt="Bookly Logo" 
-          style={styles.logo} 
+        <img
+          src="https://github.com/1N4B0M9/Bookly/blob/main/Assets/Bookly_New_Logo.png?raw=true"
+          alt="Bookly Logo"
+          style={styles.logo}
         />
       </h1>
 
-      {/*
-        Conditionally render the UploadForm only if there is 
-        no camera stream AND no captured image. This ensures 
-        it's hidden during camera preview and after taking a photo.
-      */}
-      {(!stream && !image) && (
-        <UploadForm
-          onResults={setResults}
-          imageAvailable={!!image}
-        />
+      {/* If no results yet, show upload form/camera UI */}
+      {!results && (
+        <>
+          {!stream && (
+            <UploadForm
+              onResults={setResults}
+              hideChooseFileButton={!!image}
+              capturedImage={image}
+              onFileStatusChange={setFileAttached}
+            />
+          )}
+
+          <div style={styles.cameraContainer}>
+            {!stream && !image && !fileAttached && (
+              <button style={styles.button} onClick={startCamera}>
+                Start Camera
+              </button>
+            )}
+
+            {stream && (
+              <div style={styles.videoContainer}>
+                <video ref={videoRef} autoPlay playsInline style={styles.video} />
+                <button style={styles.flipButton} onClick={toggleCamera}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="white"
+                    width="24px"
+                    height="24px"
+                  >
+                    <path d="M12 6V1L8 5l4 4V7c3.3 0 6 2.7 6 6 0 .3 0 .7-.1 1l1.5 1.5c.4-1 .6-2.1.6-3.5 0-4.4-3.6-8-8-8zm-8.4 1.4C2.6 9.6 2 11.3 2 13c0 4.4 3.6 8 8 8v5l4-4-4-4v3c-3.3 0-6-2.7-6-6 0-.3 0-.7.1-1l-1.5-1.5z" />
+                  </svg>
+                </button>
+
+                <div style={styles.buttonGroup}>
+                  <button style={styles.button} onClick={captureImage}>
+                    Capture
+                  </button>
+                  <button style={styles.button} onClick={stopCamera}>
+                    Close Camera
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {image && (
+            <div style={styles.imageContainer}>
+              <h2 style={styles.imageTitle}>Captured Image</h2>
+              <img src={image} alt="Captured" style={styles.image} />
+              <div style={styles.buttonGroup}>
+                <button style={styles.button} onClick={retakePhoto}>
+                  Retake
+                </button>
+              </div>
+            </div>
+          )}
+
+          <canvas
+            ref={canvasRef}
+            style={{ display: "none" }}
+            width="300"
+            height="200"
+          />
+
+          {/* 
+            The red X that returns to "home"
+            is now also black — but we give it white text so it's still visible
+          */}
+          <button
+            style={{
+              position: "absolute",
+              top: 20,
+              right: 20,
+              backgroundColor: "black",
+              border: "none",
+              fontSize: "1.5rem",
+              color: "white",
+              cursor: "pointer",
+              borderRadius: "5px",
+              padding: "0.2rem 0.5rem",
+            }}
+            onClick={returnToHome}
+          >
+            ✕
+          </button>
+        </>
       )}
 
-      <div style={styles.cameraContainer}>
-        {!stream && !image && (
-          <button style={styles.button} onClick={startCamera}>
-            Start Camera
+      {/* If we have results, show them + a "New Recommendation" button */}
+      {results && (
+        <div style={{ marginTop: "80px" }}>
+          <Recommendations extractedTitles={results.extracted_titles} />
+          <button
+            onClick={handleNewRecommendation}
+            style={{
+              marginTop: "20px",
+              padding: "10px 20px",
+              fontSize: "16px",
+              backgroundColor: "black",
+              color: "#fff",
+              borderRadius: "5px",
+              cursor: "pointer",
+              border: "none",
+            }}
+          >
+            New Recommendation
           </button>
-        )}
-
-        {stream && (
-          <div style={styles.videoContainer}>
-            <video 
-              ref={videoRef} 
-              autoPlay 
-              playsInline 
-              style={styles.video} 
-            />
-            {/* Flip Camera Button */}
-            <button style={styles.flipButton} onClick={toggleCamera}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="white"
-                width="24px"
-                height="24px"
-              >
-                <path d="M12 6V1L8 5l4 4V7c3.3 0 6 2.7 6 6 0 .3 0 .7-.1 1l1.5 1.5c.4-1 .6-2.1.6-3.5 0-4.4-3.6-8-8-8zm-8.4 1.4C2.6 9.6 2 11.3 2 13c0 4.4 3.6 8 8 8v5l4-4-4-4v3c-3.3 0-6-2.7-6-6 0-.3 0-.7.1-1l-1.5-1.5z"/>
-              </svg>
-            </button>
-
-            <div style={styles.buttonGroup}>
-              <button style={styles.button} onClick={captureImage}>
-                Capture
-              </button>
-              <button style={styles.button} onClick={stopCamera}>
-                Close Camera
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {image && (
-        <div style={styles.imageContainer}>
-          <h2 style={styles.imageTitle}>Captured Image</h2>
-          <img src={image} alt="Captured" style={styles.image} />
-          <div style={styles.buttonGroup}>
-            <button style={styles.button} onClick={retakePhoto}>
-              Retake
-            </button>
-          </div>
         </div>
       )}
-
-      <canvas 
-        ref={canvasRef} 
-        style={{ display: "none" }} 
-        width="300" 
-        height="200"
-      />
-
-      {results && <Recommendations extractedTitles={results.extracted_titles} />}
     </div>
   );
 }
@@ -160,31 +224,26 @@ const styles = {
   container: {
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
     alignItems: "center",
-    height: "100vh",
     textAlign: "center",
+    minHeight: "100vh",
     backgroundColor: "#FAF7EE",
-    color: "#fff",
+    color: "#000",
+    position: "relative",
     padding: "20px",
   },
   title: {
-    position: "absolute",
-    top: "20px",
-    left: "50%",
-    transform: "translateX(-50%)",
     fontSize: "4rem",
     fontWeight: 900,
     color: "black",
     fontFamily: hankenGrotesk.style.fontFamily,
     textAlign: "center",
     whiteSpace: "nowrap",
-    marginBottom: "40px",
+    marginBottom: "20px",
   },
   logo: {
     maxWidth: "25rem",
     height: "auto",
-    transform: "translateX(3%)",
   },
   cameraContainer: {
     display: "flex",
@@ -202,21 +261,34 @@ const styles = {
     width: "100%",
     maxWidth: "350px",
     borderRadius: "10px",
-    border: "2px solid #fff",
-    boxShadow: "0 4px 10px rgba(255, 255, 255, 0.1)",
   },
   flipButton: {
     position: "absolute",
     top: "10px",
     right: "10px",
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    // Black background, white icon
+    backgroundColor: "black",
     border: "none",
     borderRadius: "50%",
     padding: "10px",
     cursor: "pointer",
+  },
+  buttonGroup: {
     display: "flex",
+    flexDirection: "row",
+    gap: "10px",
+    marginTop: "10px",
     justifyContent: "center",
-    alignItems: "center",
+  },
+  // Now black with white text
+  button: {
+    backgroundColor: "black",
+    color: "white",
+    border: "none",
+    padding: "10px 20px",
+    borderRadius: "5px",
+    cursor: "pointer",
+    fontSize: "16px",
   },
   imageContainer: {
     display: "flex",
@@ -225,22 +297,11 @@ const styles = {
     gap: "10px",
     marginTop: "20px",
   },
-  buttonGroup: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: "10px",
-    marginTop: "10px",
+  imageTitle: {
+    color: "#000",
   },
-  button: {
-    backgroundColor: "#6f6f6f",
-    color: "white",
-    border: "none",
-    padding: "10px 20px",
-    borderRadius: "5px",
-    cursor: "pointer",
-    fontSize: "16px",
+  image: {
+    maxWidth: "350px",
+    borderRadius: "8px",
   },
 };
-
-export default Home;

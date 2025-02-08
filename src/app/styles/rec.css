@@ -4,3 +4,29 @@ div {
 ul {
     list-style-type: none;
 }
+.typing-text {
+    font-size: 20px;
+    font-weight: bold;
+    color: black;
+    overflow: hidden;
+    white-space: nowrap;
+    animation: blink 0.75s step-end infinite;
+    padding-top: 10px;
+}
+.recBox {
+    padding: 20px;
+    font-weight: bold;
+    margin: 20px;
+}
+
+@keyframes blink {
+    50% {
+        border-color: transparent;
+    }
+}
+.bookItems {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border: 1px;
+    border-color: black;
+}

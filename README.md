@@ -11,6 +11,15 @@ Goldium Wu - gow4@pitt.edu
 
 ### &nbsp;&nbsp;&nbsp;Sol, Nathan, Goldi, and Xavier present Bookly, . 
 ---
+&nbsp;
+
+## Important Links
+www.bookly.photo to check it out!
+https://github.com/1N4B0M9/BooklyBackend to checkout the backend!
+
+
+&nbsp;&nbsp;&nbsp;
+&nbsp;
 
 &nbsp;
 

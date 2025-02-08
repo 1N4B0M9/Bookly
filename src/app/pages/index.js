@@ -119,7 +119,7 @@ function Home() {
                                 Capture
                             </button>
                             <button style={styles.button} onClick={stopCamera}>
-                                Stop Camera
+                                Close Camera
                             </button>
                         </div>
                     </div>

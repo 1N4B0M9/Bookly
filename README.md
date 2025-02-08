@@ -1,6 +1,3 @@
-<p align="center">
- <img src="https://github.com/user-attachments/assets/cca32cca-a2e0-4ec2-8637-8b29a02ef616" alt="logo_updated_v2" width="200">
-</p>
 
 <div align="center">
  
@@ -18,6 +15,10 @@ Goldium Wu - gow4@pitt.edu
 &nbsp;
 
 ## What it does / how does it work?
+<p align="center">
+ <img src="https://github.com/user-attachments/assets/cca32cca-a2e0-4ec2-8637-8b29a02ef616" alt="logo_updated_v2" width="200">
+</p>
+Upload an image or take a picture like this, then tell the prommpt what you are in the mood to read and it will give you personalized recomendations!
 
 &nbsp;&nbsp;&nbsp;....
 &nbsp;

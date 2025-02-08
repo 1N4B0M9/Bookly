@@ -9,12 +9,13 @@ Xavier Hilmey - xrh1@pitt.edu
 Goldium Wu - gow4@pitt.edu
 </div>
 
-### &nbsp;&nbsp;&nbsp;Sol, Nathan, Goldi, and Xavier present Bookly. 
+### &nbsp;&nbsp;&nbsp;Sol, Nathan, Goldi, and Xavier present Bookly. A web application that provides users with high-quality and personalized book recommendations in a flash.
 ---
 &nbsp;
 
 ## Important Links
-www.bookly.photo to check it out!
+Visit www.bookly.photo to check it out!
+
 https://github.com/1N4B0M9/BooklyBackend to checkout the backend!
 
 

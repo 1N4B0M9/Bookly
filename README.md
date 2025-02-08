@@ -28,7 +28,7 @@ https://github.com/1N4B0M9/BooklyBackend to checkout the backend!
 <p align="center">
  <img src="https://github.com/user-attachments/assets/cca32cca-a2e0-4ec2-8637-8b29a02ef616" alt="logo_updated_v2" width="200">
 </p>
-Upload an image or take a picture like this, then tell the prommpt what you are in the mood to read and it will give you personalized recomendations!
+Upload an image or take a picture like shown, then describe what you are interested to read and it will give you personalized recomendations!
 
 &nbsp;&nbsp;&nbsp;
 &nbsp;

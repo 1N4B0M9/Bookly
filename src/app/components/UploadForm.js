@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import axios from "axios";
 
-export default function UploadForm({ onResults }) {
+export default function UploadForm({ onResults, imageAvailable }) {
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const fileInputRef = useRef(null);
@@ -24,25 +24,30 @@ export default function UploadForm({ onResults }) {
         formData.append("file", file);
 
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/upload`, formData, {
-                headers: { "Content-Type": "multipart/form-data" }
-            });
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/upload`,
+                formData,
+                {
+                    headers: { "Content-Type": "multipart/form-data" },
+                }
+            );
 
             onResults(response.data);
         } catch (error) {
             console.error("Upload error:", error);
             alert("Error uploading image.");
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     return (
         <div style={styles.uploadContainer}>
             {/* Hidden File Input */}
-            <input 
+            <input
                 type="file"
                 ref={fileInputRef}
-                style={{ display: "none" }} 
+                style={{ display: "none" }}
                 onChange={handleFileChange}
             />
 
@@ -51,10 +56,20 @@ export default function UploadForm({ onResults }) {
                 {file ? file.name : "Choose File"}
             </button>
 
-            {/* Upload Button */}
-            <button style={styles.uploadButton} onClick={handleUpload} disabled={loading}>
-                {loading ? "Uploading..." : "Upload Image"}
-            </button>
+            {/* 
+              Conditionally render the Upload button only if:
+              1) A file was selected, or
+              2) An image was captured via camera (imageAvailable)
+            */}
+            {(file || imageAvailable) && (
+                <button
+                    style={styles.uploadButton}
+                    onClick={handleUpload}
+                    disabled={loading}
+                >
+                    {loading ? "Uploading..." : "Upload Image"}
+                </button>
+            )}
         </div>
     );
 }
@@ -66,7 +81,6 @@ const styles = {
         alignItems: "center",
         gap: "10px",
         marginTop: "10px",
-        
     },
     chooseFileButton: {
         backgroundColor: "#6f6f6f",

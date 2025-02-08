@@ -74,13 +74,7 @@ function Home() {
         <div style={styles.container}>
             <h1 style={styles.title}>
                 <img src={"https://github.com/1N4B0M9/Bookly/blob/main/Assets/Bookly_New_Logo.png?raw=true"} alt="Bookly Logo" style={styles.logo} /> {/* Display the logo */}
-                <img
-                    src={
-                        "https://raw.githubusercontent.com/1N4B0M9/Bookly/d6f2fc9ed05afb2005fb5c48d376d59aa5e6c0cb/Assets/Logo%20-%20svg.svg"
-                    }
-                    alt="Bookly Logo"
-                    style={styles.logo}
-                />
+               
             </h1>
 
             {/* 

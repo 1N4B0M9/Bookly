@@ -100,7 +100,10 @@ function Home() {
 
     return (
         <div style={styles.container}>
-            <h1 style={styles.title}>Bookly</h1>
+            <h1 style={styles.title}>
+                <img src={"https://raw.githubusercontent.com/1N4B0M9/Bookly/d6f2fc9ed05afb2005fb5c48d376d59aa5e6c0cb/Assets/Logo%20-%20svg.svg"} alt="Bookly Logo" style={styles.logo} /> {/* Display the logo */}
+            </h1>
+
             <UploadForm onResults={setResults} />
 
             <div style={styles.cameraContainer}>
@@ -163,6 +166,12 @@ const styles = {
         fontFamily: hankenGrotesk.style.fontFamily,
         textAlign: "center",   
         whiteSpace: "nowrap",  
+        marginBottom: "40px",
+    },
+    logo: {
+        maxWidth: "25rem",  // Adjust logo size as needed
+        height: "auto",     // Maintain aspect ratio
+        transform: "translateX(3%)",
     },
     cameraContainer: {
         display: "flex",

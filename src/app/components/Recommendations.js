@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import "../styles/rec.css";
 
 export default function Recommendations({ extractedTitles }) {
     const [userPreference, setUserPreference] = useState("");

@@ -17,6 +17,7 @@ function Home() {
     const [image, setImage] = useState(null);
     const [stream, setStream] = useState(null);
     const [uploading, setUploading] = useState(false);
+    const [facingMode, setFacingMode] = useState("environment"); // "user" or "environment"
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
 
@@ -29,7 +30,9 @@ function Home() {
 
     const startCamera = async () => {
         try {
-            const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+            const mediaStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode }
+            });
             setStream(mediaStream);
             if (videoRef.current) {
                 videoRef.current.srcObject = mediaStream;
@@ -39,6 +42,12 @@ function Home() {
         }
     };
 
+    const toggleCamera = async () => {
+        setFacingMode(prev => (prev === "user" ? "environment" : "user"));
+        stopCamera(); 
+        await startCamera(); 
+    };
+
     const captureImage = () => {
         if (videoRef.current && canvasRef.current) {
             const context = canvasRef.current.getContext("2d");
@@ -46,43 +55,6 @@ function Home() {
             const imageData = canvasRef.current.toDataURL("image/png");
             setImage(imageData);
             stopCamera();
-        }
-    };
-
-    const dataURLtoFile = (dataUrl, filename) => {
-        const arr = dataUrl.split(",");
-        const mime = arr[0].match(/:(.*?);/)[1];
-        const bstr = atob(arr[1]);
-        let n = bstr.length;
-        const u8arr = new Uint8Array(n);
-        while (n--) {
-            u8arr[n] = bstr.charCodeAt(n);
-        }
-        return new File([u8arr], filename, { type: mime });
-    };
-
-    const uploadImage = async () => {
-        if (!image) return;
-
-        setUploading(true);
-
-        const file = dataURLtoFile(image, "captured_image.png");
-        const formData = new FormData();
-        formData.append("image", file);
-
-        try {
-            const response = await fetch("/api/upload", { method: "POST", body: formData });
-
-            if (!response.ok) throw new Error("Upload failed");
-
-            const result = await response.json();
-            setResults(result);
-            alert("Image uploaded successfully!");
-        } catch (error) {
-            console.error("Upload error:", error);
-            alert("Image upload failed.");
-        } finally {
-            setUploading(false);
         }
     };
 
@@ -101,21 +73,59 @@ function Home() {
     return (
         <div style={styles.container}>
             <h1 style={styles.title}>
-                <img src={"https://raw.githubusercontent.com/1N4B0M9/Bookly/d6f2fc9ed05afb2005fb5c48d376d59aa5e6c0cb/Assets/Logo%20-%20svg.svg"} alt="Bookly Logo" style={styles.logo} /> {/* Display the logo */}
+                <img
+                    src={
+                        "https://raw.githubusercontent.com/1N4B0M9/Bookly/d6f2fc9ed05afb2005fb5c48d376d59aa5e6c0cb/Assets/Logo%20-%20svg.svg"
+                    }
+                    alt="Bookly Logo"
+                    style={styles.logo}
+                />
             </h1>
 
-            <UploadForm onResults={setResults} />
+            {/* 
+              Pass `imageAvailable={!!image}` to control when 
+              the Upload button should appear in UploadForm 
+            */}
+            <UploadForm 
+              onResults={setResults} 
+              imageAvailable={!!image} 
+            />
 
             <div style={styles.cameraContainer}>
                 {!stream && !image && (
-                    <button style={styles.button} onClick={startCamera}>Start Camera</button>
+                    <button style={styles.button} onClick={startCamera}>
+                        Start Camera
+                    </button>
                 )}
+
                 {stream && (
-                    <div>
-                        <video ref={videoRef} autoPlay playsInline style={styles.video} />
+                    <div style={styles.videoContainer}>
+                        <video 
+                          ref={videoRef} 
+                          autoPlay 
+                          playsInline 
+                          style={styles.video} 
+                        />
+                        {/* Flip Camera Button */}
+                        <button style={styles.flipButton} onClick={toggleCamera}>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="white"
+                                width="24px"
+                                height="24px"
+                            >
+                                <path d="M12 6V1L8 5l4 4V7c3.3 0 6 2.7 6 6 0 .3 0 .7-.1 1l1.5 1.5c.4-1 .6-2.1.6-3.5 0-4.4-3.6-8-8-8zm-8.4 1.4C2.6 9.6 2 11.3 2 13c0 4.4 3.6 8 8 8v5l4-4-4-4v3c-3.3 0-6-2.7-6-6 0-.3 0-.7.1-1l-1.5-1.5z"/>
+                            </svg>
+                        </button>
+
                         <div style={styles.buttonGroup}>
-                            <button style={styles.button} onClick={captureImage}>Capture</button>
-                            <button style={styles.button} onClick={stopCamera}>Stop Camera</button>
+                            <button style={styles.button} onClick={captureImage}>
+                                Capture
+                            </button>
+                            <button style={styles.button} onClick={stopCamera}>
+                                Stop Camera
+                            </button>
                         </div>
                     </div>
                 )}
@@ -126,23 +136,25 @@ function Home() {
                     <h2 style={styles.imageTitle}>Captured Image</h2>
                     <img src={image} alt="Captured" style={styles.image} />
                     <div style={styles.buttonGroup}>
-                        <button style={styles.button} onClick={retakePhoto}>Retake</button>
-                        <button style={styles.button} onClick={uploadImage} disabled={uploading}>
-                            {uploading ? "Uploading..." : "Upload Image"}
+                        <button style={styles.button} onClick={retakePhoto}>
+                            Retake
                         </button>
                     </div>
                 </div>
             )}
 
-            <canvas ref={canvasRef} style={{ display: "none" }} width="300" height="200"></canvas>
+            <canvas 
+              ref={canvasRef} 
+              style={{ display: "none" }} 
+              width="300" 
+              height="200"
+            ></canvas>
 
             {results && <Recommendations extractedTitles={results.extracted_titles} />}
-
         </div>
     );
 }
 
-// CSS Styles
 const styles = {
     container: {
         display: "flex",
@@ -156,21 +168,21 @@ const styles = {
         padding: "20px",
     },
     title: {
-        position: "absolute",  
-        top: "20px",           
-        left: "50%",           
-        transform: "translateX(-50%)", 
+        position: "absolute",
+        top: "20px",
+        left: "50%",
+        transform: "translateX(-50%)",
         fontSize: "4rem",
-        fontWeight: 900,      
+        fontWeight: 900,
         color: "black",
         fontFamily: hankenGrotesk.style.fontFamily,
-        textAlign: "center",   
-        whiteSpace: "nowrap",  
+        textAlign: "center",
+        whiteSpace: "nowrap",
         marginBottom: "40px",
     },
     logo: {
-        maxWidth: "25rem",  // Adjust logo size as needed
-        height: "auto",     // Maintain aspect ratio
+        maxWidth: "25rem",
+        height: "auto",
         transform: "translateX(3%)",
     },
     cameraContainer: {
@@ -179,6 +191,12 @@ const styles = {
         alignItems: "center",
         gap: "10px",
     },
+    videoContainer: {
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+    },
     video: {
         width: "100%",
         maxWidth: "350px",
@@ -186,24 +204,25 @@ const styles = {
         border: "2px solid #fff",
         boxShadow: "0 4px 10px rgba(255, 255, 255, 0.1)",
     },
+    flipButton: {
+        position: "absolute",
+        top: "10px",
+        right: "10px",
+        backgroundColor: "rgba(0, 0, 0, 0.6)",
+        border: "none",
+        borderRadius: "50%",
+        padding: "10px",
+        cursor: "pointer",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+    },
     imageContainer: {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         gap: "10px",
         marginTop: "20px",
-    },
-    imageTitle: {
-        fontSize: "20px",
-        fontWeight: "600",
-        color: "#3f3f3f",
-    },
-    image: {
-        width: "100%",
-        maxWidth: "350px",
-        borderRadius: "10px",
-        border: "2px solid #fff",
-        boxShadow: "0 4px 10px rgba(255, 255, 255, 0.1)",
     },
     buttonGroup: {
         display: "flex",
@@ -220,9 +239,7 @@ const styles = {
         borderRadius: "5px",
         cursor: "pointer",
         fontSize: "16px",
-        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
     },
-  
 };
 
 export default Home;

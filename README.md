@@ -6,7 +6,7 @@
 # Bookly
 The team: 
 Nathan Morelli - nbm27@pitt.edu
-Sol Elsila - aaz50@pitt.edu
+Sol Elsila - spe30@pitt.edu
 Xavier Hilmey - xrh1@pitt.edu
 Goldium Wu - gow4@pitt.edu
 </div>

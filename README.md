@@ -1,4 +1,5 @@
 <p align="center">
+ <img src="![books-organization-f](https://github.com/user-attachments/assets/cca32cca-a2e0-4ec2-8637-8b29a02ef616)" alt="logo_updated_v2" width="200">
 </p>
 
 <div align="center">
@@ -17,11 +18,12 @@ Goldium Wu - gow4@pitt.edu
 &nbsp;
 
 ## What it does / how does it work?
+
 &nbsp;&nbsp;&nbsp;....
 &nbsp;
 
 ## How we built it
-We developed Bookly using .
+We developed Bookly using the Next.js framework and Flask backend which used the openai API and the Google Vision API to parse the images.
 &nbsp;
 
 ## Challenges we faced and how we tackled it

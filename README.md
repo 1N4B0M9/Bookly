@@ -9,7 +9,7 @@ Xavier Hilmey - xrh1@pitt.edu
 Goldium Wu - gow4@pitt.edu
 </div>
 
-### &nbsp;&nbsp;&nbsp;Sol, Nathan, Goldi, and Xavier present Bookly, . 
+### &nbsp;&nbsp;&nbsp;Sol, Nathan, Goldi, and Xavier present Bookly. 
 ---
 &nbsp;
 

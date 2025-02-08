@@ -1,8 +1,16 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import UploadForm from "../components/UploadForm";
 import Recommendations from "../components/Recommendations";
+import { Hanken_Grotesk } from "next/font/google";
+
+const hankenGrotesk = Hanken_Grotesk({
+    subsets: ["latin"],
+    weight: ["400", "700", "900"], 
+    variable: "--font-hanken", 
+});
 
 function Home() {
     const [results, setResults] = useState(null);
@@ -19,7 +27,6 @@ function Home() {
         }
     }, [stream]);
 
-    // Start the camera
     const startCamera = async () => {
         try {
             const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -32,7 +39,6 @@ function Home() {
         }
     };
 
-    // Capture the image from the video feed
     const captureImage = () => {
         if (videoRef.current && canvasRef.current) {
             const context = canvasRef.current.getContext("2d");
@@ -43,7 +49,6 @@ function Home() {
         }
     };
 
-    // Convert base64 to a File object
     const dataURLtoFile = (dataUrl, filename) => {
         const arr = dataUrl.split(",");
         const mime = arr[0].match(/:(.*?);/)[1];
@@ -56,7 +61,6 @@ function Home() {
         return new File([u8arr], filename, { type: mime });
     };
 
-    // Upload the captured image
     const uploadImage = async () => {
         if (!image) return;
 
@@ -82,7 +86,6 @@ function Home() {
         }
     };
 
-    // Stop the camera
     const stopCamera = () => {
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
@@ -90,18 +93,16 @@ function Home() {
         }
     };
 
-    // Retake photo by starting the camera again
     const retakePhoto = () => {
         setImage(null);
-        startCamera(); // Automatically restart the camera
+        startCamera();
     };
 
     return (
         <div style={styles.container}>
-            <h1 style={styles.title}>Bookshelf Scanner 📚</h1>
+            <h1 style={styles.title}>Bookly</h1>
             <UploadForm onResults={setResults} />
 
-            {/* Camera Controls */}
             <div style={styles.cameraContainer}>
                 {!stream && !image && (
                     <button style={styles.button} onClick={startCamera}>Start Camera</button>
@@ -117,7 +118,6 @@ function Home() {
                 )}
             </div>
 
-            {/* Display captured image */}
             {image && (
                 <div style={styles.imageContainer}>
                     <h2 style={styles.imageTitle}>Captured Image</h2>
@@ -131,15 +131,15 @@ function Home() {
                 </div>
             )}
 
-            {/* Canvas for capturing image */}
             <canvas ref={canvasRef} style={{ display: "none" }} width="300" height="200"></canvas>
 
             {results && <Recommendations extractedTitles={results.extracted_titles} />}
+
         </div>
     );
 }
 
-// CSS Styles for Centering and Mobile-Friendly UI
+// CSS Styles
 const styles = {
     container: {
         display: "flex",
@@ -148,14 +148,24 @@ const styles = {
         alignItems: "center",
         height: "100vh",
         textAlign: "center",
-        backgroundColor: "#000", // Black background
-        color: "#fff", // White text
+        backgroundColor: "#FAF7EE",
+        color: "#fff",
         padding: "20px",
+        backgroundImage: "url('data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\"%3E%3Ctext x=\"0\" y=\"25\" font-size=\"30\" font-family=\"Arial\" fill=\"rgba(0, 0, 0, 0.2)\"%3E📚%3C/text%3E%3C/svg%3E')", 
+        backgroundRepeat: "repeat",  // Ensures the emoji repeats
+        backgroundSize: "200px 200px",
     },
     title: {
-        fontSize: "28px",
-        fontWeight: "bold",
-        marginBottom: "20px",
+        position: "absolute",  
+        top: "20px",           
+        left: "50%",           
+        transform: "translateX(-50%)", 
+        fontSize: "4rem",
+        fontWeight: 900,      
+        color: "black",
+        fontFamily: hankenGrotesk.style.fontFamily,
+        textAlign: "center",   
+        whiteSpace: "nowrap",  
     },
     cameraContainer: {
         display: "flex",
@@ -167,7 +177,7 @@ const styles = {
         width: "100%",
         maxWidth: "350px",
         borderRadius: "10px",
-        border: "2px solid #fff", // White border
+        border: "2px solid #fff",
         boxShadow: "0 4px 10px rgba(255, 255, 255, 0.1)",
     },
     imageContainer: {
@@ -180,12 +190,13 @@ const styles = {
     imageTitle: {
         fontSize: "20px",
         fontWeight: "600",
+        color: "#3f3f3f",
     },
     image: {
         width: "100%",
         maxWidth: "350px",
         borderRadius: "10px",
-        border: "2px solid #fff", // White border
+        border: "2px solid #fff",
         boxShadow: "0 4px 10px rgba(255, 255, 255, 0.1)",
     },
     buttonGroup: {
@@ -196,7 +207,7 @@ const styles = {
         marginTop: "10px",
     },
     button: {
-        backgroundColor: "#007BFF",
+        backgroundColor: "#6f6f6f",
         color: "white",
         border: "none",
         padding: "10px 20px",
@@ -205,6 +216,7 @@ const styles = {
         fontSize: "16px",
         boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
     },
+  
 };
 
 export default Home;

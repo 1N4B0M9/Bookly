@@ -1,5 +1,5 @@
 <p align="center">
- <img src="![books-organization-f](https://github.com/user-attachments/assets/cca32cca-a2e0-4ec2-8637-8b29a02ef616)" alt="logo_updated_v2" width="200">
+ <img src="https://github.com/user-attachments/assets/cca32cca-a2e0-4ec2-8637-8b29a02ef616" alt="logo_updated_v2" width="200">
 </p>
 
 <div align="center">
